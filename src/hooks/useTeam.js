@@ -26,7 +26,7 @@ export function useTeamRoster(teamAbbrev) {
     let cancelled = false
     setState({ roster: null, loading: true, error: null })
 
-    fetch(`/nhl-api/v1/roster/${teamAbbrev}/current`)
+    fetch(`/nhl-api/v1/roster/${teamAbbrev}/20252026`)
       .then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`)
         return r.json()
@@ -74,7 +74,7 @@ export function useTeamStats(teamAbbrev) {
     let cancelled = false
     setState({ stats: null, loading: true, error: null })
 
-    fetch(`/nhl-api/v1/club-stats/${teamAbbrev}/now`)
+    fetch(`/nhl-api/v1/club-stats/${teamAbbrev}/20252026/2`)
       .then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`)
         return r.json()
