@@ -1,0 +1,109 @@
+.stats-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+}
+
+.stats-table thead tr {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.stats-table th {
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+}
+
+.stats-table th.num-col,
+.stats-table td.num-col {
+  text-align: right;
+}
+
+.stats-table tbody tr {
+  border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+  transition: background var(--transition-fast);
+}
+
+.stats-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.stats-table tbody tr:hover {
+  background: var(--color-bg-elevated);
+}
+
+.stats-table td {
+  padding: var(--space-2) var(--space-3);
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+}
+
+/* Season column — not monospaced */
+.season-col {
+  font-family: var(--font-family) !important;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.team-col {
+  font-family: var(--font-family) !important;
+  color: var(--color-text-secondary) !important;
+}
+
+/* Current season row */
+.stats-row--current {
+  background: var(--color-highlight-row) !important;
+  border-left: 3px solid var(--color-highlight-border) !important;
+}
+
+.stats-row--current .season-col {
+  padding-left: calc(var(--space-3) - 3px);
+}
+
+.current-badge {
+  color: var(--color-accent);
+  font-size: 8px;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+/* Stat colors */
+.stat-goals {
+  color: var(--color-goals) !important;
+}
+
+.stat-assists {
+  color: var(--color-assists) !important;
+}
+
+.stat-points {
+  color: var(--color-points) !important;
+  font-weight: 700;
+}
+
+.positive {
+  color: var(--color-assists) !important;
+}
+
+.negative {
+  color: var(--color-goals) !important;
+}
+
+.stats-table-empty {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  padding: var(--space-4) 0;
+}

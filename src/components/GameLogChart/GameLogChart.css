@@ -1,0 +1,108 @@
+.game-log-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.game-log-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.game-log-subtitle {
+  font-size: var(--font-size-sm);
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
+/* Legend */
+.game-log-legend {
+  display: flex;
+  gap: var(--space-4);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.gl-legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.gl-legend-item::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.gl-legend-item.goals {
+  color: var(--color-goals);
+}
+
+.gl-legend-item.goals::before {
+  background: var(--color-goals);
+}
+
+.gl-legend-item.assists {
+  color: var(--color-assists);
+}
+
+.gl-legend-item.assists::before {
+  background: var(--color-assists);
+}
+
+/* Empty state */
+.game-log-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
+/* Tooltip */
+.game-log-tooltip {
+  min-width: 180px;
+}
+
+.gl-tooltip-opponent {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-top: -6px;
+  margin-bottom: var(--space-2);
+}
+
+.gl-tooltip-grid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 3px var(--space-4);
+  margin-top: var(--space-2);
+}
+
+.gl-stat-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.gl-stat-value {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  font-family: var(--font-mono);
+  text-align: right;
+  color: var(--color-text-primary);
+}
+
+.gl-stat-value.goals { color: var(--color-goals); }
+.gl-stat-value.assists { color: var(--color-assists); }
+.gl-stat-value.points { color: var(--color-points); }
+.gl-stat-value.pos { color: var(--color-assists); }
+.gl-stat-value.neg { color: var(--color-goals); }

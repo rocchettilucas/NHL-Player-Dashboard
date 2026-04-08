@@ -1,0 +1,38 @@
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  background: rgba(248, 81, 73, 0.1);
+  border: 1px solid rgba(248, 81, 73, 0.3);
+  border-radius: var(--radius-md);
+  color: #f85149;
+  font-size: var(--font-size-sm);
+}
+
+.error-banner__icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.error-banner__message {
+  flex: 1;
+  color: var(--color-text-primary);
+}
+
+.error-banner__retry {
+  padding: var(--space-1) var(--space-3);
+  background: rgba(248, 81, 73, 0.15);
+  border: 1px solid rgba(248, 81, 73, 0.4);
+  border-radius: var(--radius-sm);
+  color: #f85149;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  white-space: nowrap;
+}
+
+.error-banner__retry:hover {
+  background: rgba(248, 81, 73, 0.25);
+}

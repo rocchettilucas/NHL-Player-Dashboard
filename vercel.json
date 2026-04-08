@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/solr/:path*",
+      "destination": "https://search.d3.hockey/solr/:path*"
+    },
+    {
+      "source": "/nhl-api/:path*",
+      "destination": "https://api-web.nhle.com/:path*"
+    }
+  ]
+}

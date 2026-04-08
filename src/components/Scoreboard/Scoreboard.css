@@ -1,0 +1,196 @@
+.scoreboard-section {
+  width: 100%;
+  max-width: 1280px;
+}
+
+/* ── Day selector ────────────────────────────────────────── */
+.scoreboard-days {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding-bottom: var(--space-3);
+  margin-bottom: var(--space-4);
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-bg-hover) transparent;
+}
+
+.scoreboard-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  flex-shrink: 0;
+  min-width: 90px;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.scoreboard-day:hover {
+  background: var(--color-bg-elevated);
+  border-color: var(--color-text-muted);
+}
+
+.scoreboard-day--active {
+  border-color: var(--color-accent);
+  background: var(--color-accent-glow);
+}
+
+.scoreboard-day--today .scoreboard-day__label {
+  color: var(--color-accent);
+}
+
+.scoreboard-day__label {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.scoreboard-day__date {
+  font-size: 10px;
+  color: var(--color-text-muted);
+}
+
+.scoreboard-day__count {
+  font-size: 10px;
+  color: var(--color-text-muted);
+}
+
+/* ── Live indicator ──────────────────────────────────────── */
+.scoreboard-live-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--color-goals);
+  border-radius: 50%;
+  margin-left: var(--space-2);
+  animation: pulse-live 1.5s ease-in-out infinite;
+  vertical-align: middle;
+}
+
+.scoreboard-live-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--color-goals);
+  border-radius: 50%;
+  animation: pulse-live 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pulse-live {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* ── Groups ──────────────────────────────────────────────── */
+.scoreboard-groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.scoreboard-group__title {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.scoreboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-3);
+}
+
+.scoreboard-empty {
+  text-align: center;
+  padding: var(--space-8);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* ── Game card ───────────────────────────────────────────── */
+.game-card {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  transition: border-color var(--transition-fast);
+}
+
+.game-card--live {
+  border-color: var(--color-goals);
+  box-shadow: 0 0 12px rgba(248, 81, 73, 0.1);
+}
+
+.game-card__status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 18px;
+}
+
+.game-card__period {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  color: var(--color-goals);
+}
+
+.game-card__final {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.game-card__time {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.game-card__team {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-1) 0;
+}
+
+.game-card__team--winner .game-card__abbrev,
+.game-card__team--winner .game-card__score {
+  color: var(--color-text-primary);
+  font-weight: 700;
+}
+
+.game-card__logo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.game-card__abbrev {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  flex: 1;
+}
+
+.game-card__score {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  min-width: 24px;
+  text-align: right;
+}
