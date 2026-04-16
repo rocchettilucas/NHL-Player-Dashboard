@@ -1,0 +1,40 @@
+/* src/components/SeasonToggle/SeasonToggle.css */
+.season-toggle {
+  display: inline-flex;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-1);
+  gap: var(--space-1);
+}
+
+.season-toggle__btn {
+  padding: var(--space-2) var(--space-5);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-md);
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.season-toggle__btn:hover {
+  color: var(--color-text-primary);
+}
+
+.season-toggle__btn--active {
+  background: var(--color-accent-dark);
+  color: var(--color-text-primary);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 640px) {
+  .season-toggle {
+    display: flex;
+    width: 100%;
+  }
+
+  .season-toggle__btn {
+    flex: 1;
+    text-align: center;
+  }
+}
