@@ -23,13 +23,13 @@ const TEAM_TABS = [
   { key: 'goalAgainst', label: 'Goals Against', getter: (t) => t.goalAgainst, ascending: true },
 ]
 
-export function LeagueLeaders({ onSelectPlayer, onSelectTeam }) {
+export function LeagueLeaders({ onSelectPlayer, onSelectTeam, gameType = 2 }) {
   const [skaterTab, setSkaterTab] = useState('points')
   const [goalieTab, setGoalieTab] = useState('savePctg')
   const [teamTab, setTeamTab] = useState('points')
 
-  const { data: skaterData, loading: skaterLoading } = useSkaterLeaders(10)
-  const { data: goalieData, loading: goalieLoading } = useGoalieLeaders(10)
+  const { data: skaterData, loading: skaterLoading } = useSkaterLeaders(10, gameType)
+  const { data: goalieData, loading: goalieLoading } = useGoalieLeaders(10, gameType)
   const { teams, loading: teamsLoading } = useStandings()
 
   const activeSkaterTab = SKATER_TABS.find((t) => t.key === skaterTab)
@@ -47,9 +47,11 @@ export function LeagueLeaders({ onSelectPlayer, onSelectTeam }) {
   return (
     <section className="leaders-section">
       <h2 className="section-title">
-        <span className="section-title__icon">🏆</span> League Leaders
+        <span className="section-title__icon">🏆</span> {gameType === 3 ? 'Playoff' : 'League'} Leaders
       </h2>
-      <p className="section-subtitle">Top performers across the NHL this season</p>
+      <p className="section-subtitle">
+        {gameType === 3 ? 'Top performers in the 2026 playoffs' : 'Top performers across the NHL this season'}
+      </p>
 
       <div className="leaders-grid">
         {/* Skaters */}
