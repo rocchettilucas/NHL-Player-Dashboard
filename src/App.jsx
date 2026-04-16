@@ -11,11 +11,15 @@ import { LeagueLeaders } from './components/LeagueLeaders/LeagueLeaders'
 import { TeamsBrowser } from './components/TeamsBrowser/TeamsBrowser'
 import { Scoreboard } from './components/Scoreboard/Scoreboard'
 import { TeamPage } from './components/TeamPage/TeamPage'
+import { PlayoffBracket } from './components/PlayoffBracket/PlayoffBracket'
+import { PlayoffBanner } from './components/PlayoffBanner/PlayoffBanner'
+import { SeasonToggle } from './components/SeasonToggle/SeasonToggle'
 
 import { CompareButton, PlayerComparisonPanel } from './components/PlayerComparison/PlayerComparison'
 
 import { usePlayer } from './hooks/usePlayer'
 import { useGameLog } from './hooks/useGameLog'
+import { usePlayoffBracket } from './hooks/usePlayoffBracket'
 
 
 const POPULAR_PLAYERS = [
@@ -39,6 +43,18 @@ export default function App() {
   const [primaryId, setPrimaryId] = useState(null)
   const [selectedTeam, setSelectedTeam] = useState(null)
   const [compareOpen, setCompareOpen] = useState(false)
+  const [seasonFilter, setSeasonFilter] = useState('playoffs')
+  const [playerTab, setPlayerTab] = useState('regular')
+  const [navigationSource, setNavigationSource] = useState({ from: 'home' })
+
+  // Playoff bracket data
+  const { bracketData, loading: bracketLoading, error: bracketError } = usePlayoffBracket()
+
+  // Auto-detect playoff mode: check if bracket data has any series
+  const playoffMode = !!bracketData
+
+  // Derive the gameType from seasonFilter
+  const gameType = playoffMode && seasonFilter === 'playoffs' ? 3 : 2
 
   const {
     data: playerData,
@@ -54,12 +70,21 @@ export default function App() {
     retry: gameLogRetry,
   } = useGameLog(primaryId)
 
+  const {
+    gameLog: playoffGameLog,
+    loading: playoffGameLogLoading,
+    error: playoffGameLogError,
+    retry: playoffGameLogRetry,
+  } = useGameLog(primaryId, 3)
+
   const hasPlayer = !!primaryId
   const hasTeam = !!selectedTeam
 
-  const handleSelectPlayer = (id) => {
+  const handleSelectPlayer = (id, source) => {
     setSelectedTeam(null)
     setPrimaryId(id)
+    setPlayerTab('regular')
+    setNavigationSource(source ?? { from: 'home' })
   }
 
   const handleSelectTeam = (abbrev) => {
@@ -70,6 +95,17 @@ export default function App() {
   const handleBackHome = () => {
     setPrimaryId(null)
     setSelectedTeam(null)
+    setNavigationSource({ from: 'home' })
+  }
+
+  const handleBackFromPlayer = () => {
+    if (navigationSource.from === 'team' && navigationSource.teamAbbrev) {
+      setPrimaryId(null)
+      setSelectedTeam(navigationSource.teamAbbrev)
+    } else {
+      handleBackHome()
+    }
+    setNavigationSource({ from: 'home' })
   }
 
   return (
@@ -102,6 +138,25 @@ export default function App() {
       {/* ── Home page ──────────────────────────────────────── */}
       {!hasPlayer && !hasTeam && (
         <div className="home-page">
+          {/* Playoff Banner */}
+          {playoffMode && (
+            <div className="home-section">
+              <PlayoffBanner bracketData={bracketData} />
+            </div>
+          )}
+
+          {/* Playoff Bracket */}
+          {playoffMode && (
+            <div className="home-section">
+              <PlayoffBracket
+                bracketData={bracketData}
+                loading={bracketLoading}
+                error={bracketError}
+                onSelectTeam={handleSelectTeam}
+              />
+            </div>
+          )}
+
           {/* Popular Players */}
           <div className="home-section home-section--popular">
             <p className="popular-heading">Popular Players</p>
@@ -132,14 +187,21 @@ export default function App() {
             </div>
           </div>
 
+          {/* Season Toggle */}
+          {playoffMode && (
+            <div className="home-section home-section--toggle">
+              <SeasonToggle value={seasonFilter} onChange={setSeasonFilter} />
+            </div>
+          )}
+
           {/* Scoreboard */}
           <div className="home-section">
-            <Scoreboard />
+            <Scoreboard gameType={gameType} />
           </div>
 
           {/* Trending Players */}
           <div className="home-section">
-            <TrendingPlayers onSelectPlayer={handleSelectPlayer} />
+            <TrendingPlayers onSelectPlayer={handleSelectPlayer} gameType={gameType} />
           </div>
 
           {/* League Leaders */}
@@ -147,6 +209,7 @@ export default function App() {
             <LeagueLeaders
               onSelectPlayer={handleSelectPlayer}
               onSelectTeam={handleSelectTeam}
+              gameType={gameType}
             />
           </div>
 
@@ -162,7 +225,7 @@ export default function App() {
         <TeamPage
           teamAbbrev={selectedTeam}
           onBack={handleBackHome}
-          onSelectPlayer={handleSelectPlayer}
+          onSelectPlayer={(id) => handleSelectPlayer(id, { from: 'team', teamAbbrev: selectedTeam })}
         />
       )}
 
@@ -170,8 +233,10 @@ export default function App() {
       {hasPlayer && (
         <>
           <div className="player-actions">
-            <button className="back-button" onClick={handleBackHome}>
-              &larr; Back to Home
+            <button className="back-button" onClick={handleBackFromPlayer}>
+              &larr; {navigationSource.from === 'team'
+                ? `Back to ${navigationSource.teamAbbrev}`
+                : 'Back to Home'}
             </button>
             <CompareButton onClick={() => setCompareOpen(true)} />
           </div>
@@ -183,22 +248,52 @@ export default function App() {
             onRetry={playerRetry}
           />
 
-          <div className="dashboard-grid">
-            <div className="charts-row">
-              <CareerChart
-                playerData={playerData}
-                loading={playerLoading}
-              />
-              <GameLogChart
-                gameLog={gameLog}
-                loading={gameLogLoading}
-                error={gameLogError}
-                onRetry={gameLogRetry}
-              />
-            </div>
-
-            <StatsTable playerData={playerData} loading={playerLoading} />
+          {/* Player tab bar */}
+          <div className="player-tab-bar">
+            <button
+              className={`player-tab ${playerTab === 'regular' ? 'player-tab--active' : ''}`}
+              onClick={() => setPlayerTab('regular')}
+            >
+              Regular Season
+            </button>
+            <button
+              className={`player-tab ${playerTab === 'playoffs' ? 'player-tab--active' : ''}`}
+              onClick={() => setPlayerTab('playoffs')}
+            >
+              Playoffs
+            </button>
           </div>
+
+          {playerTab === 'regular' ? (
+            <div className="dashboard-grid">
+              <div className="charts-row">
+                <CareerChart
+                  playerData={playerData}
+                  loading={playerLoading}
+                />
+                <GameLogChart
+                  gameLog={gameLog}
+                  loading={gameLogLoading}
+                  error={gameLogError}
+                  onRetry={gameLogRetry}
+                />
+              </div>
+              <StatsTable playerData={playerData} loading={playerLoading} />
+            </div>
+          ) : (
+            <div className="dashboard-grid">
+              <div className="charts-row">
+                <GameLogChart
+                  gameLog={playoffGameLog}
+                  loading={playoffGameLogLoading}
+                  error={playoffGameLogError}
+                  onRetry={playoffGameLogRetry}
+                  gameCount={null}
+                />
+              </div>
+              <StatsTable playerData={playerData} loading={playerLoading} gameType={3} />
+            </div>
+          )}
 
           <PlayerComparisonPanel
             primaryData={playerData}
