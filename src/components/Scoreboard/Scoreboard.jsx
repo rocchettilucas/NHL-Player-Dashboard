@@ -32,7 +32,7 @@ function formatDate(dateStr) {
   return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
 }
 
-export function Scoreboard() {
+export function Scoreboard({ gameType = 2 }) {
   const { games: todayGames, currentDate, loading: scoresLoading } = useScores()
   const { days, loading: scheduleLoading } = useSchedule()
   const [activeDay, setActiveDay] = useState(null)
@@ -52,7 +52,10 @@ export function Scoreboard() {
   const selectedTab = dayTabs.find((d) => d.date === selectedDate)
 
   // For today, use the polled score data; for other days use schedule data
-  const displayGames = selectedDate === currentDate ? todayGames : (selectedTab?.games ?? [])
+  const allDisplayGames = selectedDate === currentDate ? todayGames : (selectedTab?.games ?? [])
+  const displayGames = gameType === 3
+    ? allDisplayGames.filter((g) => g.gameType === 3 || g.gameType == null)
+    : allDisplayGames
 
   const liveGames = displayGames.filter((g) => isLive(g.gameState))
   const completedGames = displayGames.filter((g) => isFinal(g.gameState))
@@ -63,10 +66,12 @@ export function Scoreboard() {
   return (
     <section className="scoreboard-section">
       <h2 className="section-title">
-        <span className="section-title__icon">📺</span> Games &amp; Scores
+        <span className="section-title__icon">📺</span> {gameType === 3 ? 'Playoff Games' : 'Games & Scores'}
       </h2>
       <p className="section-subtitle">
-        Live scores, today's results, and upcoming schedule
+        {gameType === 3
+          ? 'Playoff matchups with series context'
+          : 'Live scores, today\'s results, and upcoming schedule'}
         {selectedDate === currentDate && (
           <span className="scoreboard-live-dot" title="Auto-refreshing every 60s" />
         )}
@@ -137,8 +142,17 @@ function GameCard({ game }) {
   const awayWins = hasScore && final && game.awayTeam.score > game.homeTeam.score
   const homeWins = hasScore && final && game.homeTeam.score > game.awayTeam.score
 
+  const seriesLabel = game.seriesStatus
+    ? typeof game.seriesStatus === 'string'
+      ? game.seriesStatus
+      : game.seriesStatus.seriesStatusShort ?? null
+    : null
+
   return (
     <div className={`game-card ${live ? 'game-card--live' : ''}`}>
+      {seriesLabel && (
+        <div className="game-card__series">{seriesLabel}</div>
+      )}
       {/* Status badge */}
       <div className="game-card__status">
         {live && (

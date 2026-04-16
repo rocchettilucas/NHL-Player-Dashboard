@@ -194,3 +194,14 @@
   min-width: 24px;
   text-align: right;
 }
+
+/* ── Playoff series context ─────────────── */
+.game-card__series {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-accent);
+  text-align: center;
+  padding: var(--space-1) var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-accent-glow);
+}
