@@ -1,0 +1,287 @@
+/* src/components/PlayoffBracket/PlayoffBracket.css */
+
+.bracket-section {
+  width: 100%;
+}
+
+.bracket-error {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  text-align: center;
+  padding: var(--space-6);
+}
+
+.bracket-desktop {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  overflow-x: auto;
+  padding: var(--space-4) 0;
+}
+
+.bracket-conference {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  flex: 1;
+}
+
+.bracket-conference__label {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+.bracket-conference__rounds {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+.bracket-conference--reverse .bracket-conference__rounds {
+  flex-direction: row-reverse;
+}
+
+.bracket-round {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.bracket-round-label {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-align: center;
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-2);
+}
+
+.bracket-round__series {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.bracket-final {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  align-items: center;
+  padding: 0 var(--space-4);
+}
+
+.matchup-card {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  min-width: 160px;
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+.matchup-card--active {
+  border-color: var(--color-accent-dark);
+  box-shadow: 0 0 12px var(--color-accent-glow);
+}
+
+.matchup-card--complete {
+  opacity: 0.85;
+}
+
+.matchup-card__main {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.matchup-card__main:hover {
+  background: var(--color-bg-hover);
+}
+
+.matchup-team {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  transition: background var(--transition-fast);
+}
+
+.matchup-team + .matchup-team {
+  border-top: 1px solid var(--color-border);
+}
+
+.matchup-team--winner {
+  background: rgba(63, 185, 80, 0.08);
+}
+
+.matchup-team--eliminated {
+  opacity: 0.45;
+}
+
+.matchup-team__logo {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+}
+
+.matchup-team__logo:hover {
+  transform: scale(1.15);
+}
+
+.matchup-team__name {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  flex: 1;
+}
+
+.matchup-team__wins {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  min-width: 16px;
+  text-align: right;
+}
+
+.matchup-badge {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.matchup-badge--advances {
+  background: rgba(63, 185, 80, 0.2);
+  color: var(--color-assists);
+}
+
+.matchup-badge--eliminated {
+  background: rgba(248, 81, 73, 0.15);
+  color: var(--color-goals);
+}
+
+.matchup-card__games {
+  border-top: 1px solid var(--color-border);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-bg-elevated);
+}
+
+.matchup-game {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-1) 0;
+  font-size: var(--font-size-xs);
+}
+
+.matchup-game__label {
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.matchup-game__score {
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.matchup-game__tbd {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.bracket-mobile {
+  display: none;
+}
+
+.bracket-mobile-rounds {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.bracket-mobile-round__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.bracket-mobile-round__header--open {
+  border-color: var(--color-accent-dark);
+  background: var(--color-bg-elevated);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.bracket-mobile-round__summary {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.bracket-mobile-round__chevron {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.bracket-mobile-round__series {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-top: none;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
+.bracket-mobile-round__series .matchup-card {
+  min-width: unset;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .bracket-desktop {
+    display: none;
+  }
+
+  .bracket-mobile {
+    display: block;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1023px) {
+  .matchup-card {
+    min-width: 130px;
+  }
+
+  .matchup-team__logo {
+    width: 20px;
+    height: 20px;
+  }
+
+  .matchup-team__name {
+    font-size: var(--font-size-xs);
+  }
+}
