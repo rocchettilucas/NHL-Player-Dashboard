@@ -1,13 +1,13 @@
 import './StatsTable.css'
-import { getTableSeasons } from '../../utils/statsHelpers'
+import { getTableSeasons, getPlayoffTableSeasons } from '../../utils/statsHelpers'
 import { formatPlusMinus } from '../../utils/formatters'
 import { LoadingSpinner } from '../LoadingSpinner/LoadingSpinner'
 
-export function StatsTable({ playerData, loading }) {
+export function StatsTable({ playerData, loading, gameType = 2 }) {
   if (loading) {
     return (
       <div className="card">
-        <h2 className="card-title">Career Stats</h2>
+        <h2 className="card-title">{gameType === 3 ? 'Playoff Career Stats' : 'Career Stats'}</h2>
         <LoadingSpinner label="Loading stats…" />
       </div>
     )
@@ -16,20 +16,22 @@ export function StatsTable({ playerData, loading }) {
   if (!playerData) return null
 
   const currentSeason = playerData.featuredStats?.season ?? null
-  const rows = getTableSeasons(playerData.seasonTotals, currentSeason)
+  const rows = gameType === 3
+    ? getPlayoffTableSeasons(playerData.seasonTotals, currentSeason)
+    : getTableSeasons(playerData.seasonTotals, currentSeason)
 
   if (rows.length === 0) {
     return (
       <div className="card">
-        <h2 className="card-title">Career Stats</h2>
-        <p className="stats-table-empty">No NHL regular season data available.</p>
+        <h2 className="card-title">{gameType === 3 ? 'Playoff Career Stats' : 'Career Stats'}</h2>
+        <p className="stats-table-empty">{gameType === 3 ? 'No NHL playoff data available.' : 'No NHL regular season data available.'}</p>
       </div>
     )
   }
 
   return (
     <div className="card">
-      <h2 className="card-title">Career Stats</h2>
+      <h2 className="card-title">{gameType === 3 ? 'Playoff Career Stats' : 'Career Stats'}</h2>
       <div className="stats-table-wrapper">
         <table className="stats-table">
           <thead>

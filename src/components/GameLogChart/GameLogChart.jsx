@@ -13,7 +13,7 @@ import { prepareGameLog } from '../../utils/statsHelpers'
 import { LoadingSpinner } from '../LoadingSpinner/LoadingSpinner'
 import { ErrorBanner } from '../ErrorBanner/ErrorBanner'
 
-export function GameLogChart({ gameLog, loading, error, onRetry }) {
+export function GameLogChart({ gameLog, loading, error, onRetry, gameCount = 20 }) {
   if (loading) {
     return (
       <div className="card game-log-card">
@@ -34,7 +34,7 @@ export function GameLogChart({ gameLog, loading, error, onRetry }) {
 
   if (!gameLog) return null
 
-  const data = prepareGameLog(gameLog, 20)
+  const data = prepareGameLog(gameLog, gameCount)
 
   if (data.length === 0) {
     return (
@@ -52,7 +52,7 @@ export function GameLogChart({ gameLog, loading, error, onRetry }) {
       <div className="game-log-header">
         <h2 className="card-title" style={{ marginBottom: 0 }}>
           Game Log
-          <span className="game-log-subtitle"> — Last {data.length} Games</span>
+          <span className="game-log-subtitle"> — {gameCount ? `Last ${data.length}` : `All ${data.length}`} Games</span>
         </h2>
         <div className="game-log-legend">
           <span className="gl-legend-item goals">Goals</span>
