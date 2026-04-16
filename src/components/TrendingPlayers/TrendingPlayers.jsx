@@ -8,7 +8,7 @@ import { LoadingSpinner } from '../LoadingSpinner/LoadingSpinner'
  * Uses the player landing API's last5Games data via the skater leaders endpoint,
  * then fetches each top player's last5Games to rank by recent production.
  */
-export function TrendingPlayers({ onSelectPlayer }) {
+export function TrendingPlayers({ onSelectPlayer, gameType = 2 }) {
   const [players, setPlayers] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -16,7 +16,7 @@ export function TrendingPlayers({ onSelectPlayer }) {
     let cancelled = false
 
     // Fetch top points leaders, then get their last5Games from landing data
-    fetch('/nhl-api/v1/skater-stats-leaders/20252026/2?categories=points&limit=20')
+    fetch(`/nhl-api/v1/skater-stats-leaders/20252026/${gameType}?categories=points&limit=20`)
       .then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`)
         return r.json()
@@ -63,12 +63,12 @@ export function TrendingPlayers({ onSelectPlayer }) {
       })
 
     return () => { cancelled = true }
-  }, [])
+  }, [gameType])
 
   if (loading) {
     return (
       <section className="trending-section">
-        <h2 className="section-title">Trending Players</h2>
+        <h2 className="section-title">{gameType === 3 ? 'Playoff Hot Streaks' : 'Trending Players'}</h2>
         <LoadingSpinner label="Loading trending players..." />
       </section>
     )
@@ -79,9 +79,11 @@ export function TrendingPlayers({ onSelectPlayer }) {
   return (
     <section className="trending-section">
       <h2 className="section-title">
-        <span className="section-title__icon">🔥</span> Trending Players
+        <span className="section-title__icon">🔥</span> {gameType === 3 ? 'Playoff Hot Streaks' : 'Trending Players'}
       </h2>
-      <p className="section-subtitle">Hottest performers over their last 5 games</p>
+      <p className="section-subtitle">
+        {gameType === 3 ? 'Hottest performers in the playoffs' : 'Hottest performers over their last 5 games'}
+      </p>
       <div className="trending-grid">
         {players.map((p, i) => (
           <button
