@@ -310,6 +310,44 @@
   color: var(--color-accent);
 }
 
+/* ── Season toggle area ────────────────────────────────── */
+.home-section--toggle {
+  display: flex;
+  justify-content: center;
+}
+
+/* ── Player tab bar ────────────────────────────────────── */
+.player-tab-bar {
+  display: flex;
+  gap: var(--space-1);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-1);
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-2);
+  width: fit-content;
+}
+
+.player-tab {
+  padding: var(--space-2) var(--space-5);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-md);
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.player-tab:hover {
+  color: var(--color-text-primary);
+}
+
+.player-tab--active {
+  background: var(--color-accent-dark);
+  color: var(--color-text-primary);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
 @media (max-width: 640px) {
   .app {
     padding: var(--space-4);
@@ -322,5 +360,14 @@
   .search-section {
     width: 100%;
     max-width: 100%;
+  }
+
+  .player-tab-bar {
+    width: 100%;
+  }
+
+  .player-tab {
+    flex: 1;
+    text-align: center;
   }
 }
