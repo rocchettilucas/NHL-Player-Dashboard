@@ -31,7 +31,10 @@ export function PlayoffBracket({ bracketData, loading, error, onSelectTeam }) {
         <h2 className="section-title">
           <span className="section-title__icon">🏆</span> Playoff Bracket
         </h2>
-        <p className="bracket-error">Could not load bracket. {error}</p>
+        <div className="bracket-coming-soon">
+          <p className="bracket-coming-soon__text">Playoff bracket will appear here once matchups are set.</p>
+          <p className="bracket-coming-soon__sub">Check back when the regular season ends.</p>
+        </div>
       </section>
     )
   }

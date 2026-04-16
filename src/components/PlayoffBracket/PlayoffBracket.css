@@ -11,6 +11,26 @@
   padding: var(--space-6);
 }
 
+.bracket-coming-soon {
+  text-align: center;
+  padding: var(--space-8) var(--space-6);
+  background: var(--color-bg-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.bracket-coming-soon__text {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-2);
+}
+
+.bracket-coming-soon__sub {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
 .bracket-desktop {
   display: flex;
   align-items: center;

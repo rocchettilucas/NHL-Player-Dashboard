@@ -50,11 +50,12 @@ export default function App() {
   // Playoff bracket data
   const { bracketData, loading: bracketLoading, error: bracketError } = usePlayoffBracket()
 
-  // Auto-detect playoff mode: check if bracket data has any series
-  const playoffMode = !!bracketData
+  // Playoff mode is enabled when bracket data exists OR while it's still loading/errored
+  // This ensures playoff UI is visible even before the NHL publishes bracket data
+  const playoffMode = true
 
   // Derive the gameType from seasonFilter
-  const gameType = playoffMode && seasonFilter === 'playoffs' ? 3 : 2
+  const gameType = seasonFilter === 'playoffs' ? 3 : 2
 
   const {
     data: playerData,

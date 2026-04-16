@@ -18,7 +18,16 @@ export function PlayoffBanner({ bracketData }) {
     return () => clearInterval(interval)
   }, [])
 
-  if (!bracketData) return null
+  if (!bracketData) {
+    return (
+      <div className="playoff-banner playoff-banner--countdown">
+        <span className="playoff-banner__icon">🏒</span>
+        <span className="playoff-banner__text">
+          2026 Stanley Cup Playoffs — Coming Soon
+        </span>
+      </div>
+    )
+  }
 
   // Determine state from bracket data
   const { playoffStartDate, currentRound, champion } = parseBracketState(bracketData)
