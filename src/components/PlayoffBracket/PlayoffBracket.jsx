@@ -11,7 +11,7 @@ const ROUND_LABELS = {
   4: 'Stanley Cup Final',
 }
 
-export function PlayoffBracket({ bracketData, loading, error, onSelectTeam }) {
+export function PlayoffBracket({ bracketData, loading, error, onSelectTeam, isProjected }) {
   const [expandedSeries, setExpandedSeries] = useState(null)
 
   if (loading && !bracketData) {
@@ -74,7 +74,9 @@ export function PlayoffBracket({ bracketData, loading, error, onSelectTeam }) {
       <h2 className="section-title">
         <span className="section-title__icon">🏆</span> Playoff Bracket
       </h2>
-      <p className="section-subtitle">2025-26 Stanley Cup Playoffs</p>
+      <p className="section-subtitle">
+        2025-26 Stanley Cup Playoffs{isProjected ? ' — Projected from current standings' : ''}
+      </p>
 
       <div className="bracket-desktop">
         <ConferenceBracket

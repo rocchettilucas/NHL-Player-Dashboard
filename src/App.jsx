@@ -48,7 +48,7 @@ export default function App() {
   const [navigationSource, setNavigationSource] = useState({ from: 'home' })
 
   // Playoff bracket data
-  const { bracketData, loading: bracketLoading, error: bracketError } = usePlayoffBracket()
+  const { bracketData, loading: bracketLoading, error: bracketError, isProjected } = usePlayoffBracket()
 
   // Playoff mode is enabled when bracket data exists OR while it's still loading/errored
   // This ensures playoff UI is visible even before the NHL publishes bracket data
@@ -142,7 +142,7 @@ export default function App() {
           {/* Playoff Banner */}
           {playoffMode && (
             <div className="home-section">
-              <PlayoffBanner bracketData={bracketData} />
+              <PlayoffBanner bracketData={bracketData} isProjected={isProjected} />
             </div>
           )}
 
@@ -154,6 +154,7 @@ export default function App() {
                 loading={bracketLoading}
                 error={bracketError}
                 onSelectTeam={handleSelectTeam}
+                isProjected={isProjected}
               />
             </div>
           )}

@@ -9,7 +9,7 @@ import './PlayoffBanner.css'
  *
  * @param {{ bracketData: object|null }} props
  */
-export function PlayoffBanner({ bracketData }) {
+export function PlayoffBanner({ bracketData, isProjected }) {
   const [now, setNow] = useState(() => new Date())
 
   // Update the countdown every minute
@@ -24,6 +24,17 @@ export function PlayoffBanner({ bracketData }) {
         <span className="playoff-banner__icon">🏒</span>
         <span className="playoff-banner__text">
           2026 Stanley Cup Playoffs — Coming Soon
+        </span>
+      </div>
+    )
+  }
+
+  if (isProjected) {
+    return (
+      <div className="playoff-banner playoff-banner--projected">
+        <span className="playoff-banner__icon">🏒</span>
+        <span className="playoff-banner__text">
+          2026 Stanley Cup Playoffs — Projected Bracket Based on Current Standings
         </span>
       </div>
     )
