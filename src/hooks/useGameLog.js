@@ -1,16 +1,19 @@
 import { useState, useEffect } from 'react'
 
-// Module-level cache: playerId → game log array
+// Module-level cache: "playerId-gameType" → game log array
 const CACHE = new Map()
 
 /**
  * Fetch the current-season game log for a player.
  * @param {number|null} playerId
+ * @param {number} gameType - 2 for regular season, 3 for playoffs
  * @returns {{ gameLog: object[], loading: boolean, error: string|null, retry: () => void }}
  */
-export function useGameLog(playerId) {
+export function useGameLog(playerId, gameType = 2) {
   const [state, setState] = useState({ gameLog: [], loading: false, error: null })
   const [retryCount, setRetryCount] = useState(0)
+
+  const cacheKey = playerId ? `${playerId}-${gameType}` : null
 
   useEffect(() => {
     if (!playerId) {
@@ -18,15 +21,15 @@ export function useGameLog(playerId) {
       return
     }
 
-    if (CACHE.has(playerId)) {
-      setState({ gameLog: CACHE.get(playerId), loading: false, error: null })
+    if (CACHE.has(cacheKey)) {
+      setState({ gameLog: CACHE.get(cacheKey), loading: false, error: null })
       return
     }
 
     let cancelled = false
     setState({ gameLog: [], loading: true, error: null })
 
-    fetch(`/nhl-api/v1/player/${playerId}/game-log/20252026/2`)
+    fetch(`/nhl-api/v1/player/${playerId}/game-log/20252026/${gameType}`)
       .then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`)
         return r.json()
@@ -34,7 +37,7 @@ export function useGameLog(playerId) {
       .then((data) => {
         if (cancelled) return
         const log = data.gameLog ?? []
-        CACHE.set(playerId, log)
+        CACHE.set(cacheKey, log)
         setState({ gameLog: log, loading: false, error: null })
       })
       .catch((err) => {
@@ -48,10 +51,10 @@ export function useGameLog(playerId) {
     return () => {
       cancelled = true
     }
-  }, [playerId, retryCount])
+  }, [playerId, gameType, retryCount, cacheKey])
 
   const retry = () => {
-    CACHE.delete(playerId)
+    CACHE.delete(cacheKey)
     setRetryCount((c) => c + 1)
   }
 
