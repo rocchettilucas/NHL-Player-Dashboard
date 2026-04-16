@@ -117,5 +117,7 @@ function mapGame(g) {
     periodType: g.periodDescriptor?.periodType ?? '',
     clock: g.clock?.timeRemaining ?? '',
     inIntermission: g.clock?.inIntermission ?? false,
+    gameType: g.gameType ?? 2,
+    seriesStatus: g.seriesStatus ?? null,
   }
 }
