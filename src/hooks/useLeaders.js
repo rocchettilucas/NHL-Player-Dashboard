@@ -6,16 +6,17 @@ const CURRENT_SEASON = '20252026'
 /**
  * Fetch skater stat leaders (goals, assists, points).
  * @param {number} limit
+ * @param {number} gameType
  * @returns {{ data: object|null, loading: boolean, error: string|null }}
  */
-export function useSkaterLeaders(limit = 10) {
+export function useSkaterLeaders(limit = 10, gameType = 2) {
   const [state, setState] = useState({ data: null, loading: true, error: null })
 
   useEffect(() => {
     let cancelled = false
 
     fetch(
-      `/nhl-api/v1/skater-stats-leaders/${CURRENT_SEASON}/2?categories=goals,assists,points&limit=${limit}`
+      `/nhl-api/v1/skater-stats-leaders/${CURRENT_SEASON}/${gameType}?categories=goals,assists,points&limit=${limit}`
     )
       .then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`)
@@ -39,7 +40,7 @@ export function useSkaterLeaders(limit = 10) {
       })
 
     return () => { cancelled = true }
-  }, [limit])
+  }, [limit, gameType])
 
   return state
 }
@@ -47,16 +48,17 @@ export function useSkaterLeaders(limit = 10) {
 /**
  * Fetch goalie stat leaders (savePctg, goalsAgainstAverage, shutouts).
  * @param {number} limit
+ * @param {number} gameType
  * @returns {{ data: object|null, loading: boolean, error: string|null }}
  */
-export function useGoalieLeaders(limit = 10) {
+export function useGoalieLeaders(limit = 10, gameType = 2) {
   const [state, setState] = useState({ data: null, loading: true, error: null })
 
   useEffect(() => {
     let cancelled = false
 
     fetch(
-      `/nhl-api/v1/goalie-stats-leaders/${CURRENT_SEASON}/2?categories=savePctg,goalsAgainstAverage,shutouts&limit=${limit}`
+      `/nhl-api/v1/goalie-stats-leaders/${CURRENT_SEASON}/${gameType}?categories=savePctg,goalsAgainstAverage,shutouts&limit=${limit}`
     )
       .then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`)
@@ -80,7 +82,7 @@ export function useGoalieLeaders(limit = 10) {
       })
 
     return () => { cancelled = true }
-  }, [limit])
+  }, [limit, gameType])
 
   return state
 }
