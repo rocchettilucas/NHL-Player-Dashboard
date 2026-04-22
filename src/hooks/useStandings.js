@@ -1,13 +1,43 @@
 import { useState, useEffect } from 'react'
 import { extractStr } from '../utils/formatters'
 
+/** YYYY-MM-DD for a date N days before today, local time. */
+function dateDaysAgo(n) {
+  const d = new Date()
+  d.setDate(d.getDate() - n)
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
+/**
+ * Fetch standings, walking backward until a non-empty response is found.
+ *
+ * Why: the date-specific endpoint `/standings/{date}` returns an empty array
+ * for any day during the playoffs, and the `/standings/now` endpoint 307-
+ * redirects cross-origin which the browser can't follow through Vercel's
+ * rewrites (works in Vite dev only because the proxy follows redirects).
+ * Trying a handful of progressively older offsets is robust across regular
+ * season (today returns data) and any point in the playoffs.
+ */
+async function fetchStandingsWithFallback() {
+  const offsets = [0, 1, 3, 7, 14, 21, 30, 45, 60]
+  for (const n of offsets) {
+    const date = dateDaysAgo(n)
+    try {
+      const r = await fetch(`/nhl-api/v1/standings/${date}`)
+      if (!r.ok) continue
+      const data = await r.json()
+      if (Array.isArray(data.standings) && data.standings.length > 0) {
+        return data
+      }
+    } catch {
+      // try the next offset
+    }
+  }
+  return null
+}
+
 /**
  * Fetch current NHL standings.
- *
- * Uses the `/standings/now` endpoint which returns live standings during the
- * regular season and the final regular-season standings during the playoffs
- * (the date-specific endpoint returns an empty array once playoffs start).
- *
  * @returns {{ teams: array, loading: boolean, error: string|null }}
  */
 export function useStandings() {
@@ -16,13 +46,13 @@ export function useStandings() {
   useEffect(() => {
     let cancelled = false
 
-    fetch(`/nhl-api/v1/standings/now`)
-      .then((r) => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`)
-        return r.json()
-      })
+    fetchStandingsWithFallback()
       .then((data) => {
         if (cancelled) return
+        if (!data) {
+          setState({ teams: [], loading: false, error: 'Standings unavailable' })
+          return
+        }
         const teams = (data.standings ?? []).map((t) => ({
           teamAbbrev: extractStr(t.teamAbbrev) || '',
           teamName: extractStr(t.teamName),
