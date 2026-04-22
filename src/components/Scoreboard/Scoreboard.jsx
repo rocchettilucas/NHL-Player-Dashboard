@@ -39,13 +39,21 @@ export function Scoreboard({ gameType = 2 }) {
 
   const loading = scoresLoading || scheduleLoading
 
-  // Build day tabs from schedule
-  const dayTabs = days.map((d) => ({
-    date: d.date,
-    label: d.dayAbbrev,
-    count: d.numberOfGames,
-    games: d.games,
-  }))
+  // Build day tabs from schedule. Counts reflect the active game-type filter
+  // so the tab and the main area stay in sync (e.g., "0 games" for regular
+  // season days during playoffs).
+  const filterByType = (games) => gameType === 3
+    ? games.filter((g) => g.gameType === 3 || g.gameType == null)
+    : games.filter((g) => g.gameType === 2 || g.gameType == null)
+  const dayTabs = days.map((d) => {
+    const filteredGames = filterByType(d.games)
+    return {
+      date: d.date,
+      label: d.dayAbbrev,
+      count: filteredGames.length,
+      games: filteredGames,
+    }
+  })
 
   // If no active day selected, default to today (currentDate)
   const selectedDate = activeDay || currentDate || (dayTabs[0]?.date ?? '')
@@ -55,7 +63,7 @@ export function Scoreboard({ gameType = 2 }) {
   const allDisplayGames = selectedDate === currentDate ? todayGames : (selectedTab?.games ?? [])
   const displayGames = gameType === 3
     ? allDisplayGames.filter((g) => g.gameType === 3 || g.gameType == null)
-    : allDisplayGames
+    : allDisplayGames.filter((g) => g.gameType === 2 || g.gameType == null)
 
   const liveGames = displayGames.filter((g) => isLive(g.gameState))
   const completedGames = displayGames.filter((g) => isFinal(g.gameState))
@@ -97,7 +105,11 @@ export function Scoreboard({ gameType = 2 }) {
       {loading ? (
         <LoadingSpinner label="Loading scores..." />
       ) : displayGames.length === 0 ? (
-        <div className="scoreboard-empty">No games scheduled for this day</div>
+        <div className="scoreboard-empty">
+          {gameType === 2
+            ? 'No regular season games right now — the playoffs are underway.'
+            : 'No games scheduled for this day'}
+        </div>
       ) : (
         <div className="scoreboard-groups">
           {liveGames.length > 0 && (

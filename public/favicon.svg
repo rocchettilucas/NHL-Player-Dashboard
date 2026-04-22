@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="puckGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#30363d"/>
+      <stop offset="100%" stop-color="#161b22"/>
+    </linearGradient>
+    <linearGradient id="stickGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#58a6ff"/>
+      <stop offset="100%" stop-color="#1f6feb"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="12" fill="#0d1117"/>
+  <g transform="rotate(-25 32 32)">
+    <rect x="12" y="18" width="40" height="6" rx="2" fill="url(#stickGrad)"/>
+    <rect x="44" y="16" width="10" height="12" rx="2" fill="url(#stickGrad)"/>
+  </g>
+  <ellipse cx="32" cy="46" rx="18" ry="6" fill="url(#puckGrad)" stroke="#58a6ff" stroke-width="1.5"/>
+  <ellipse cx="32" cy="44" rx="18" ry="6" fill="#21262d" stroke="#58a6ff" stroke-width="1.5"/>
+</svg>
