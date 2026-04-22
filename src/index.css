@@ -9,10 +9,13 @@
   --color-border: #30363d;
   --color-border-active: #58a6ff;
 
-  /* Text */
+  /* Text — contrast ratios vs #0d1117 bg:
+     primary   #e6edf3  ~14.5:1  (body + headings)
+     secondary #adb3bb  ~8.0:1   (meta/labels; was #8b949e ~5.1:1)
+     muted     #8b949e  ~5.1:1   (lowest-emphasis labels; was #484f58 ~3.1:1 — failed WCAG AA) */
   --color-text-primary: #e6edf3;
-  --color-text-secondary: #8b949e;
-  --color-text-muted: #484f58;
+  --color-text-secondary: #adb3bb;
+  --color-text-muted: #8b949e;
 
   /* Accent */
   --color-accent: #58a6ff;

@@ -11,40 +11,9 @@ const ROUND_LABELS = {
   4: 'SCF',
 }
 
-const ROUND_FULL_NAMES = {
-  1: 'First Round',
-  2: 'Second Round',
-  3: 'Conference Finals',
-  4: 'Stanley Cup Final',
-}
-
 const CONFERENCE_FINAL_LABEL = {
   east: 'EASTERN',
   west: 'WESTERN',
-}
-
-/**
- * Determine the current active round from bracket data. The active round is
- * the highest round with at least one series where neither team has reached
- * 4 wins yet (i.e., there's still a playable series). Defaults to round 1.
- */
-function getCurrentRound(rounds) {
-  if (!Array.isArray(rounds) || rounds.length === 0) return 1
-
-  for (let i = rounds.length - 1; i >= 0; i--) {
-    const round = rounds[i]
-    const series = round.series ?? []
-    const hasActive = series.some((s) => {
-      const topAbbrev = s.topSeedTeam?.abbrev ?? ''
-      const bottomAbbrev = s.bottomSeedTeam?.abbrev ?? ''
-      if (!topAbbrev || !bottomAbbrev) return false
-      const topWins = s.topSeedWins ?? 0
-      const bottomWins = s.bottomSeedWins ?? 0
-      return topWins < 4 && bottomWins < 4
-    })
-    if (hasActive) return round.roundNumber ?? (i + 1)
-  }
-  return 1
 }
 
 export function PlayoffBracket({ bracketData, loading, error, onSelectTeam, isProjected }) {
@@ -100,8 +69,6 @@ export function PlayoffBracket({ bracketData, loading, error, onSelectTeam, isPr
   }
 
   const finalRound = rounds.find((r) => (r.roundNumber ?? 0) === 4)
-  const currentRound = getCurrentRound(rounds)
-  const currentRoundName = ROUND_FULL_NAMES[currentRound] ?? 'First Round'
 
   const toggleExpand = (seriesId) => {
     setExpandedSeries((prev) => (prev === seriesId ? null : seriesId))
@@ -110,7 +77,7 @@ export function PlayoffBracket({ bracketData, loading, error, onSelectTeam, isPr
   return (
     <section className="bracket-section">
       <h2 className="section-title">
-        <span className="section-title__icon">🏆</span> 2026 Stanley Cup Playoffs — {currentRoundName}
+        <span className="section-title__icon">🏆</span> 2026 Stanley Cup Playoffs
       </h2>
       <p className="section-subtitle">
         {isProjected

@@ -122,15 +122,21 @@ function parseBracketState(bracketData) {
     result.playoffStartDate = allDates[0]
   }
 
-  // Determine current active round (highest round with an incomplete series)
+  // Determine current active round (highest round with an incomplete series
+  // where teams are actually set — the API sends future rounds with
+  // topSeedWins/bottomSeedWins = 0 but no team data, and those should not
+  // count as "active").
   if (Array.isArray(rounds)) {
     for (let i = rounds.length - 1; i >= 0; i--) {
       const round = rounds[i]
       const series = round.series ?? [round]
-      const hasActive = series.some(
-        (s) => s.topSeedWins != null && s.bottomSeedWins != null &&
+      const hasActive = series.some((s) => {
+        const topAbbrev = s.topSeedTeam?.abbrev ?? ''
+        const bottomAbbrev = s.bottomSeedTeam?.abbrev ?? ''
+        if (!topAbbrev || !bottomAbbrev) return false
+        return s.topSeedWins != null && s.bottomSeedWins != null &&
                s.topSeedWins < 4 && s.bottomSeedWins < 4
-      )
+      })
       if (hasActive) {
         result.currentRound = round.roundNumber ?? (i + 1)
         break
