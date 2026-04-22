@@ -24,22 +24,3 @@ A real-time NHL dashboard with live scores, playoff brackets, career stats, and 
 | **Data** | NHL public API (`api-web.nhle.com`) |
 | **Host** | Vercel |
 
-## 🚀 Getting Started
-
-```bash
-npm install
-npm run dev      # → http://localhost:5173
-npm run build    # production build
-npm run preview  # preview the production build locally
-```
-
-No API keys required — all data comes from the public NHL endpoints, proxied through Vite in dev and Vercel rewrites in production.
-
-## 📁 Project Structure
-
-```
-src/
-├── components/       # UI components (bracket, scoreboard, leaders, charts, ...)
-├── hooks/            # Data-fetching hooks (player, game log, bracket, standings)
-└── utils/            # Formatters, stats helpers, bracket projection
-```
