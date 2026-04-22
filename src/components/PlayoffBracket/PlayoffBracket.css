@@ -2,6 +2,11 @@
 
 .bracket-section {
   width: 100%;
+  padding: var(--space-5) 0 var(--space-6);
+}
+
+.bracket-section .section-title {
+  font-size: var(--font-size-xl);
 }
 
 .bracket-error {
@@ -31,34 +36,33 @@
   color: var(--color-text-muted);
 }
 
+/* ── Desktop bracket layout ─────────────────────────────── */
+
 .bracket-desktop {
   display: flex;
-  align-items: center;
-  gap: var(--space-6);
-  overflow-x: auto;
+  align-items: stretch;
+  gap: var(--space-4);
   padding: var(--space-4) 0;
+  width: 100%;
+  min-height: 720px;
 }
 
 .bracket-conference {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
   flex: 1;
+  min-width: 0;
 }
 
 .bracket-conference__label {
-  font-size: var(--font-size-xs);
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-  letter-spacing: 1px;
-  text-align: center;
+  display: none; /* Visually minimal — the conference is implied by position */
 }
 
 .bracket-conference__rounds {
   display: flex;
-  gap: var(--space-4);
-  align-items: center;
+  gap: var(--space-3);
+  align-items: stretch;
+  flex: 1;
 }
 
 .bracket-conference--reverse .bracket-conference__rounds {
@@ -68,40 +72,112 @@
 .bracket-round {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-}
-
-.bracket-round-label {
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  color: var(--color-text-secondary);
-  text-align: center;
-  padding-bottom: var(--space-2);
-  border-bottom: 1px solid var(--color-border);
-  margin-bottom: var(--space-2);
+  flex: 1;
+  min-width: 0;
+  padding: 0 var(--space-2);
 }
 
 .bracket-round__series {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  justify-content: space-around;
+  flex: 1;
+  min-height: 0;
+  padding: var(--space-2) 0;
 }
+
+/* ── Round labels (top + bottom of each column) ─────────── */
+
+.bracket-round-label {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-align: center;
+  letter-spacing: 1.5px;
+  padding: var(--space-1) 0;
+}
+
+.bracket-round-label--top {
+  margin-bottom: var(--space-1);
+}
+
+.bracket-round-label--bottom {
+  margin-top: var(--space-1);
+}
+
+/* ── Stanley Cup Final centerpiece ──────────────────────── */
 
 .bracket-final {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
   align-items: center;
-  padding: 0 var(--space-4);
+  justify-content: center;
+  gap: var(--space-3);
+  flex: 0 0 auto;
+  width: clamp(180px, 18%, 240px);
+  padding: 0 var(--space-2);
 }
+
+.bracket-final--placeholder .bracket-final__trophy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  width: 100%;
+  padding: var(--space-6) var(--space-4);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  min-height: 220px;
+}
+
+.matchup-card--scf {
+  min-height: 110px;
+  border-color: var(--color-accent-dark);
+  box-shadow: 0 0 16px var(--color-accent-glow);
+  background: linear-gradient(
+    180deg,
+    rgba(88, 166, 255, 0.08) 0%,
+    var(--color-bg-surface) 100%
+  );
+}
+
+.matchup-card--scf .matchup-card__conf-final-label > span:first-child {
+  color: var(--color-accent);
+  letter-spacing: 2.5px;
+}
+
+.bracket-final__year-top,
+.bracket-final__year-bottom {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  letter-spacing: 4px;
+  line-height: 1;
+}
+
+.bracket-final__trophy-icon {
+  font-size: 80px;
+  line-height: 1;
+  filter: drop-shadow(0 4px 12px rgba(88, 166, 255, 0.3));
+  margin: var(--space-2) 0;
+}
+
+/* ── Matchup cards ──────────────────────────────────────── */
 
 .matchup-card {
   background: var(--color-bg-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   overflow: hidden;
-  min-width: 160px;
-  transition: border-color var(--transition-base), box-shadow var(--transition-base);
+  width: 100%;
+  transition: border-color var(--transition-base), transform var(--transition-fast);
+}
+
+.matchup-card:hover {
+  transform: translateY(-1px);
+  border-color: var(--color-border-hover, var(--color-border));
 }
 
 .matchup-card--active {
@@ -129,9 +205,9 @@
 .matchup-team {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-3);
   padding: var(--space-2) var(--space-3);
-  transition: background var(--transition-fast);
+  min-height: 40px;
 }
 
 .matchup-team + .matchup-team {
@@ -151,6 +227,7 @@
   height: 24px;
   object-fit: contain;
   cursor: pointer;
+  flex-shrink: 0;
   transition: transform var(--transition-fast);
 }
 
@@ -158,18 +235,34 @@
   transform: scale(1.15);
 }
 
+.matchup-team__identity {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-1);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
 .matchup-team__name {
   font-size: var(--font-size-sm);
-  font-weight: 600;
+  font-weight: 700;
   color: var(--color-text-primary);
-  flex: 1;
+  letter-spacing: 0.5px;
+}
+
+.matchup-team__seed {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  letter-spacing: 0.3px;
 }
 
 .matchup-team__wins {
-  font-size: var(--font-size-base);
-  font-weight: 700;
+  font-size: var(--font-size-lg);
+  font-weight: 800;
   color: var(--color-text-primary);
-  min-width: 16px;
+  min-width: 18px;
   text-align: right;
 }
 
@@ -193,6 +286,52 @@
   background: rgba(248, 81, 73, 0.15);
   color: var(--color-goals);
 }
+
+/* ── Placeholder (TBD) matchup cards ────────────────────── */
+
+.matchup-card--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px;
+  background: var(--color-bg-surface);
+  border-style: solid;
+  border-color: var(--color-border);
+}
+
+.matchup-card--conf-final {
+  min-height: 150px;
+}
+
+.matchup-card__shield {
+  font-size: 36px;
+  opacity: 0.25;
+  filter: grayscale(1);
+}
+
+.matchup-card__conf-final-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.matchup-card__conf-final-label > span:first-child {
+  font-size: var(--font-size-base);
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.matchup-card__conf-final-sub {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  letter-spacing: 1.5px;
+}
+
+/* ── Expanded game details ──────────────────────────────── */
 
 .matchup-card__games {
   border-top: 1px solid var(--color-border);
@@ -222,6 +361,8 @@
   color: var(--color-text-muted);
   font-style: italic;
 }
+
+/* ── Mobile bracket (collapsible rounds) ────────────────── */
 
 .bracket-mobile {
   display: none;
@@ -291,9 +432,16 @@
   }
 }
 
-@media (min-width: 769px) and (max-width: 1023px) {
-  .matchup-card {
-    min-width: 130px;
+@media (min-width: 769px) and (max-width: 1199px) {
+  .bracket-desktop {
+    min-height: 600px;
+    gap: var(--space-2);
+  }
+
+  .matchup-team {
+    padding: var(--space-1) var(--space-2);
+    gap: var(--space-2);
+    min-height: 34px;
   }
 
   .matchup-team__logo {
@@ -303,5 +451,39 @@
 
   .matchup-team__name {
     font-size: var(--font-size-xs);
+  }
+
+  .matchup-team__wins {
+    font-size: var(--font-size-base);
+  }
+
+  .matchup-card--placeholder {
+    min-height: 80px;
+  }
+
+  .matchup-card--conf-final {
+    min-height: 120px;
+  }
+
+  .bracket-final {
+    width: clamp(140px, 14%, 200px);
+  }
+
+  .bracket-final--placeholder .bracket-final__trophy {
+    min-height: 170px;
+    padding: var(--space-4) var(--space-3);
+  }
+
+  .bracket-final__trophy-icon {
+    font-size: 56px;
+  }
+
+  .bracket-final__year-top,
+  .bracket-final__year-bottom {
+    font-size: 22px;
+  }
+
+  .matchup-card--scf {
+    min-height: 90px;
   }
 }

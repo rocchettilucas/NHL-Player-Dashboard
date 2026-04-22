@@ -95,44 +95,48 @@ function buildConferenceMatchups(confTeams) {
 
   // Matchup 1: Best division winner vs WC2 (worst wild card)
   if (bestDivWinner && wc2) {
-    matchups.push(makeSeries(bestDivWinner, wc2, 'A'))
+    matchups.push(makeSeries(bestDivWinner, 'D1', wc2, 'WC2', 'A'))
   }
 
   // Matchup 2: 2nd vs 3rd in best division
   if (bestDiv && divTeams[bestDiv]?.[1] && divTeams[bestDiv]?.[2]) {
-    matchups.push(makeSeries(divTeams[bestDiv][1], divTeams[bestDiv][2], 'B'))
+    matchups.push(makeSeries(divTeams[bestDiv][1], 'D2', divTeams[bestDiv][2], 'D3', 'B'))
   }
 
   // Matchup 3: Other division winner vs WC1
   if (otherDivWinner && wc1) {
-    matchups.push(makeSeries(otherDivWinner, wc1, 'C'))
+    matchups.push(makeSeries(otherDivWinner, 'D1', wc1, 'WC1', 'C'))
   }
 
   // Matchup 4: 2nd vs 3rd in other division
   if (otherDiv && divTeams[otherDiv]?.[1] && divTeams[otherDiv]?.[2]) {
-    matchups.push(makeSeries(divTeams[otherDiv][1], divTeams[otherDiv][2], 'D'))
+    matchups.push(makeSeries(divTeams[otherDiv][1], 'D2', divTeams[otherDiv][2], 'D3', 'D'))
   }
 
   return matchups
 }
 
-function makeSeries(topTeam, bottomTeam, letter) {
+function makeSeries(topTeam, topRank, bottomTeam, bottomRank, letter) {
   return {
     seriesLetter: letter,
     topSeedWins: 0,
     bottomSeedWins: 0,
+    topSeedRankAbbrev: topRank,
+    bottomSeedRankAbbrev: bottomRank,
     topSeedTeam: makeTeamObj(topTeam),
     bottomSeedTeam: makeTeamObj(bottomTeam),
   }
 }
 
 function makeTBDSeries(conf) {
+  // Match the real NHL bracket API: future rounds have no team data.
+  // Empty abbrev values trigger the placeholder variant in MatchupCard.
   return {
     conferenceAbbrev: conf,
     topSeedWins: 0,
     bottomSeedWins: 0,
-    topSeedTeam: { abbrev: 'TBD', name: 'TBD', logo: '' },
-    bottomSeedTeam: { abbrev: 'TBD', name: 'TBD', logo: '' },
+    topSeedTeam: {},
+    bottomSeedTeam: {},
   }
 }
 

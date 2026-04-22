@@ -2,8 +2,54 @@ import { useState, useEffect, useRef } from 'react'
 import { useStandings } from './useStandings'
 import { buildProjectedBracket } from '../utils/buildProjectedBracket'
 
-const CURRENT_SEASON = '20252026'
+const PLAYOFF_YEAR = '2026'
 const POLL_INTERVAL = 60_000
+
+/**
+ * The NHL bracket endpoint returns a flat `series` array spanning all four
+ * rounds. The API's `playoffRound` field is unreliable (every non-R1 series
+ * is tagged `playoffRound: 2` even for CF and SCF), so we derive the true
+ * round from the series letter instead:
+ *   A–H → R1 (8 series)  I–L → R2 (4 series)  M–N → R3 (2 series)  O → R4 (1 series)
+ * Conference assignment follows the same letter convention:
+ *   East: A,B,C,D (R1), I,J (R2), M (R3)
+ *   West: E,F,G,H (R1), K,L (R2), N (R3)
+ */
+function roundFromLetter(letter) {
+  if (!letter) return 1
+  const idx = letter.toUpperCase().charCodeAt(0) - 'A'.charCodeAt(0)
+  if (idx < 8) return 1
+  if (idx < 12) return 2
+  if (idx < 14) return 3
+  return 4
+}
+
+function conferenceFromLetter(letter) {
+  if (!letter) return ''
+  const idx = letter.toUpperCase().charCodeAt(0) - 'A'.charCodeAt(0)
+  if (idx < 4) return 'E'          // A-D: R1 East
+  if (idx < 8) return 'W'          // E-H: R1 West
+  if (idx === 8 || idx === 9) return 'E'   // I,J: R2 East
+  if (idx === 10 || idx === 11) return 'W' // K,L: R2 West
+  if (idx === 12) return 'E'       // M: R3 East
+  if (idx === 13) return 'W'       // N: R3 West
+  return ''                        // O: R4 Stanley Cup (no conference)
+}
+
+function groupSeriesByRound(data) {
+  const byRound = new Map()
+  for (const s of data.series ?? []) {
+    const r = roundFromLetter(s.seriesLetter)
+    const tagged = { ...s, playoffRound: r, conferenceAbbrev: conferenceFromLetter(s.seriesLetter) }
+    if (!byRound.has(r)) byRound.set(r, [])
+    byRound.get(r).push(tagged)
+  }
+  const rounds = [1, 2, 3, 4].map((roundNumber) => ({
+    roundNumber,
+    series: byRound.get(roundNumber) ?? [],
+  }))
+  return { ...data, rounds }
+}
 
 /**
  * Fetch the playoff bracket and poll for updates.
@@ -24,15 +70,18 @@ export function usePlayoffBracket() {
     let cancelled = false
 
     const fetchBracket = () => {
-      fetch(`/nhl-api/v1/playoff-bracket/${CURRENT_SEASON}`)
+      fetch(`/nhl-api/v1/playoff-bracket/${PLAYOFF_YEAR}`)
         .then((r) => {
           if (!r.ok) throw new Error(`HTTP ${r.status}`)
           return r.json()
         })
         .then((data) => {
           if (cancelled) return
+          if (!data?.series || data.series.length === 0) {
+            throw new Error('Empty bracket')
+          }
           realBracketAvailable.current = true
-          setState({ bracketData: data, loading: false, error: null, isProjected: false })
+          setState({ bracketData: groupSeriesByRound(data), loading: false, error: null, isProjected: false })
         })
         .catch(() => {
           if (cancelled) return

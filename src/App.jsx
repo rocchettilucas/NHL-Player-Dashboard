@@ -159,35 +159,37 @@ export default function App() {
             </div>
           )}
 
-          {/* Popular Players */}
-          <div className="home-section home-section--popular">
-            <p className="popular-heading">Popular Players</p>
-            <div className="popular-grid">
-              {POPULAR_PLAYERS.map((p, i) => (
-                <button
-                  key={p.id}
-                  className="popular-card"
-                  style={{ animationDelay: `${i * 0.2}s` }}
-                  onClick={() => handleSelectPlayer(p.id)}
-                >
-                  <div className="popular-card__logo-wrap">
-                    <img
-                      className="popular-card__team-logo"
-                      src={getTeamLogoUrl(p.team)}
-                      alt={p.team}
-                      loading="lazy"
-                    />
-                  </div>
-                  <div className="popular-card__info">
-                    <span className="popular-card__name">{p.name}</span>
-                    <span className="popular-card__meta">
-                      {p.team} &middot; {p.pos}
-                    </span>
-                  </div>
-                </button>
-              ))}
+          {/* Popular Players — regular-season view only */}
+          {seasonFilter === 'regular' && (
+            <div className="home-section home-section--popular">
+              <p className="popular-heading">Popular Players</p>
+              <div className="popular-grid">
+                {POPULAR_PLAYERS.map((p, i) => (
+                  <button
+                    key={p.id}
+                    className="popular-card"
+                    style={{ animationDelay: `${i * 0.2}s` }}
+                    onClick={() => handleSelectPlayer(p.id)}
+                  >
+                    <div className="popular-card__logo-wrap">
+                      <img
+                        className="popular-card__team-logo"
+                        src={getTeamLogoUrl(p.team)}
+                        alt={p.team}
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="popular-card__info">
+                      <span className="popular-card__name">{p.name}</span>
+                      <span className="popular-card__meta">
+                        {p.team} &middot; {p.pos}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Season Toggle */}
           {playoffMode && (

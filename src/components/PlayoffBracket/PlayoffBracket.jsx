@@ -5,10 +5,46 @@ import { extractStr } from '../../utils/formatters'
 import { LoadingSpinner } from '../LoadingSpinner/LoadingSpinner'
 
 const ROUND_LABELS = {
+  1: 'R1',
+  2: 'R2',
+  3: 'CF',
+  4: 'SCF',
+}
+
+const ROUND_FULL_NAMES = {
   1: 'First Round',
   2: 'Second Round',
-  3: 'Conf. Finals',
+  3: 'Conference Finals',
   4: 'Stanley Cup Final',
+}
+
+const CONFERENCE_FINAL_LABEL = {
+  east: 'EASTERN',
+  west: 'WESTERN',
+}
+
+/**
+ * Determine the current active round from bracket data. The active round is
+ * the highest round with at least one series where neither team has reached
+ * 4 wins yet (i.e., there's still a playable series). Defaults to round 1.
+ */
+function getCurrentRound(rounds) {
+  if (!Array.isArray(rounds) || rounds.length === 0) return 1
+
+  for (let i = rounds.length - 1; i >= 0; i--) {
+    const round = rounds[i]
+    const series = round.series ?? []
+    const hasActive = series.some((s) => {
+      const topAbbrev = s.topSeedTeam?.abbrev ?? ''
+      const bottomAbbrev = s.bottomSeedTeam?.abbrev ?? ''
+      if (!topAbbrev || !bottomAbbrev) return false
+      const topWins = s.topSeedWins ?? 0
+      const bottomWins = s.bottomSeedWins ?? 0
+      return topWins < 4 && bottomWins < 4
+    })
+    if (hasActive) return round.roundNumber ?? (i + 1)
+  }
+  return 1
 }
 
 export function PlayoffBracket({ bracketData, loading, error, onSelectTeam, isProjected }) {
@@ -64,6 +100,8 @@ export function PlayoffBracket({ bracketData, loading, error, onSelectTeam, isPr
   }
 
   const finalRound = rounds.find((r) => (r.roundNumber ?? 0) === 4)
+  const currentRound = getCurrentRound(rounds)
+  const currentRoundName = ROUND_FULL_NAMES[currentRound] ?? 'First Round'
 
   const toggleExpand = (seriesId) => {
     setExpandedSeries((prev) => (prev === seriesId ? null : seriesId))
@@ -72,35 +110,26 @@ export function PlayoffBracket({ bracketData, loading, error, onSelectTeam, isPr
   return (
     <section className="bracket-section">
       <h2 className="section-title">
-        <span className="section-title__icon">🏆</span> Playoff Bracket
+        <span className="section-title__icon">🏆</span> 2026 Stanley Cup Playoffs — {currentRoundName}
       </h2>
       <p className="section-subtitle">
-        2025-26 Stanley Cup Playoffs{isProjected ? ' — Projected from current standings' : ''}
+        {isProjected
+          ? 'Projected bracket — based on current standings'
+          : 'Live bracket — updated as series progress'}
       </p>
 
       <div className="bracket-desktop">
         <ConferenceBracket
-          conference={eastern}
+          conference={western}
+          conferenceKey="west"
           expandedSeries={expandedSeries}
           onToggle={toggleExpand}
           onSelectTeam={onSelectTeam}
         />
-        {finalRound && (
-          <div className="bracket-final">
-            <div className="bracket-round-label">{ROUND_LABELS[4]}</div>
-            {(finalRound.series ?? []).map((s) => (
-              <MatchupCard
-                key={s.seriesLetter ?? s.seriesTitle ?? 'final'}
-                series={s}
-                expanded={expandedSeries === (s.seriesLetter ?? 'final')}
-                onToggle={() => toggleExpand(s.seriesLetter ?? 'final')}
-                onSelectTeam={onSelectTeam}
-              />
-            ))}
-          </div>
-        )}
+        <StanleyCupCenter finalRound={finalRound} expandedSeries={expandedSeries} onToggle={toggleExpand} onSelectTeam={onSelectTeam} />
         <ConferenceBracket
-          conference={western}
+          conference={eastern}
+          conferenceKey="east"
           expandedSeries={expandedSeries}
           onToggle={toggleExpand}
           onSelectTeam={onSelectTeam}
@@ -120,29 +149,66 @@ export function PlayoffBracket({ bracketData, loading, error, onSelectTeam, isPr
   )
 }
 
-function ConferenceBracket({ conference, expandedSeries, onToggle, onSelectTeam, reverse }) {
-  const rounds = reverse ? [...conference.rounds].reverse() : conference.rounds
-
+function ConferenceBracket({ conference, conferenceKey, expandedSeries, onToggle, onSelectTeam, reverse }) {
   return (
     <div className={`bracket-conference ${reverse ? 'bracket-conference--reverse' : ''}`}>
       <div className="bracket-conference__label">{conference.label}</div>
       <div className="bracket-conference__rounds">
-        {rounds.map((round) => (
+        {conference.rounds.map((round) => (
           <div key={round.roundNumber} className="bracket-round">
-            <div className="bracket-round-label">{ROUND_LABELS[round.roundNumber]}</div>
+            <div className="bracket-round-label bracket-round-label--top">{ROUND_LABELS[round.roundNumber]}</div>
             <div className="bracket-round__series">
               {round.series.map((s, i) => (
                 <MatchupCard
                   key={s.seriesLetter ?? `${round.roundNumber}-${i}`}
                   series={s}
+                  roundNumber={round.roundNumber}
+                  conferenceKey={conferenceKey}
                   expanded={expandedSeries === (s.seriesLetter ?? `${round.roundNumber}-${i}`)}
                   onToggle={() => onToggle(s.seriesLetter ?? `${round.roundNumber}-${i}`)}
                   onSelectTeam={onSelectTeam}
                 />
               ))}
             </div>
+            <div className="bracket-round-label bracket-round-label--bottom">{ROUND_LABELS[round.roundNumber]}</div>
           </div>
         ))}
+      </div>
+    </div>
+  )
+}
+
+function StanleyCupCenter({ finalRound, expandedSeries, onToggle, onSelectTeam }) {
+  const finalSeries = finalRound?.series?.[0]
+  const hasTeams = finalSeries?.topSeedTeam?.abbrev && finalSeries?.bottomSeedTeam?.abbrev
+
+  if (hasTeams) {
+    return (
+      <div className="bracket-final">
+        <MatchupCard
+          series={finalSeries}
+          roundNumber={4}
+          conferenceKey={null}
+          expanded={expandedSeries === (finalSeries.seriesLetter ?? 'final')}
+          onToggle={() => onToggle(finalSeries.seriesLetter ?? 'final')}
+          onSelectTeam={onSelectTeam}
+        />
+      </div>
+    )
+  }
+
+  return (
+    <div className="bracket-final bracket-final--placeholder">
+      <div className="bracket-final__trophy" aria-label="2026 Stanley Cup Playoffs">
+        <div className="bracket-final__year-top">20</div>
+        <div className="bracket-final__trophy-icon">🏆</div>
+        <div className="bracket-final__year-bottom">26</div>
+      </div>
+      <div className="matchup-card matchup-card--placeholder matchup-card--scf">
+        <div className="matchup-card__conf-final-label">
+          <span>STANLEY CUP</span>
+          <span className="matchup-card__conf-final-sub">FINAL</span>
+        </div>
       </div>
     </div>
   )
@@ -202,9 +268,30 @@ function MobileBracket({ rounds, expandedSeries, onToggle, onSelectTeam }) {
   )
 }
 
-function MatchupCard({ series, expanded, onToggle, onSelectTeam }) {
+function MatchupCard({ series, roundNumber, conferenceKey, expanded, onToggle, onSelectTeam }) {
   const top = series.topSeedTeam ?? series.topSeed ?? {}
   const bottom = series.bottomSeedTeam ?? series.bottomSeed ?? {}
+  const topAbbrev = top.abbrev ?? ''
+  const bottomAbbrev = bottom.abbrev ?? ''
+
+  // Empty placeholder (TBD) variant: no teams assigned yet
+  if (!topAbbrev && !bottomAbbrev) {
+    const isConfFinal = roundNumber === 3
+    const confLabel = isConfFinal && conferenceKey ? CONFERENCE_FINAL_LABEL[conferenceKey] : ''
+    return (
+      <div className={`matchup-card matchup-card--placeholder ${isConfFinal ? 'matchup-card--conf-final' : ''}`}>
+        {isConfFinal ? (
+          <div className="matchup-card__conf-final-label">
+            <span>{confLabel}</span>
+            <span className="matchup-card__conf-final-sub">CONFERENCE FINAL</span>
+          </div>
+        ) : (
+          <div className="matchup-card__shield" aria-label="TBD">🛡</div>
+        )}
+      </div>
+    )
+  }
+
   const topWins = series.topSeedWins ?? 0
   const bottomWins = series.bottomSeedWins ?? 0
   const topAdvances = topWins === 4
@@ -215,10 +302,10 @@ function MatchupCard({ series, expanded, onToggle, onSelectTeam }) {
 
   const topName = extractStr(top.name) || extractStr(top.commonName) || top.abbrev || 'TBD'
   const bottomName = extractStr(bottom.name) || extractStr(bottom.commonName) || bottom.abbrev || 'TBD'
-  const topAbbrev = top.abbrev ?? ''
-  const bottomAbbrev = bottom.abbrev ?? ''
   const topLogo = top.logo ?? top.darkLogo ?? ''
   const bottomLogo = bottom.logo ?? bottom.darkLogo ?? ''
+  const topSeedRank = series.topSeedRankAbbrev ?? ''
+  const bottomSeedRank = series.bottomSeedRankAbbrev ?? ''
 
   return (
     <div className={`matchup-card ${seriesComplete ? 'matchup-card--complete' : ''} ${!seriesComplete && topWins + bottomWins > 0 ? 'matchup-card--active' : ''}`}>
@@ -232,7 +319,10 @@ function MatchupCard({ series, expanded, onToggle, onSelectTeam }) {
               onClick={(e) => { e.stopPropagation(); if (topAbbrev) onSelectTeam(topAbbrev) }}
             />
           )}
-          <span className="matchup-team__name">{topAbbrev || topName}</span>
+          <div className="matchup-team__identity">
+            <span className="matchup-team__name">{topAbbrev || topName}</span>
+            {topSeedRank && <span className="matchup-team__seed">({topSeedRank})</span>}
+          </div>
           <span className="matchup-team__wins">{topWins}</span>
           {topAdvances && <span className="matchup-badge matchup-badge--advances">✓</span>}
           {topEliminated && <span className="matchup-badge matchup-badge--eliminated">✗</span>}
@@ -247,7 +337,10 @@ function MatchupCard({ series, expanded, onToggle, onSelectTeam }) {
               onClick={(e) => { e.stopPropagation(); if (bottomAbbrev) onSelectTeam(bottomAbbrev) }}
             />
           )}
-          <span className="matchup-team__name">{bottomAbbrev || bottomName}</span>
+          <div className="matchup-team__identity">
+            <span className="matchup-team__name">{bottomAbbrev || bottomName}</span>
+            {bottomSeedRank && <span className="matchup-team__seed">({bottomSeedRank})</span>}
+          </div>
           <span className="matchup-team__wins">{bottomWins}</span>
           {bottomAdvances && <span className="matchup-badge matchup-badge--advances">✓</span>}
           {bottomEliminated && <span className="matchup-badge matchup-badge--eliminated">✗</span>}

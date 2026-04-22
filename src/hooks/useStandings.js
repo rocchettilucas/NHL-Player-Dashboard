@@ -1,14 +1,13 @@
 import { useState, useEffect } from 'react'
 import { extractStr } from '../utils/formatters'
 
-/** Get today's date as YYYY-MM-DD in local timezone */
-function getTodayStr() {
-  const d = new Date()
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-}
-
 /**
  * Fetch current NHL standings.
+ *
+ * Uses the `/standings/now` endpoint which returns live standings during the
+ * regular season and the final regular-season standings during the playoffs
+ * (the date-specific endpoint returns an empty array once playoffs start).
+ *
  * @returns {{ teams: array, loading: boolean, error: string|null }}
  */
 export function useStandings() {
@@ -17,7 +16,7 @@ export function useStandings() {
   useEffect(() => {
     let cancelled = false
 
-    fetch(`/nhl-api/v1/standings/${getTodayStr()}`)
+    fetch(`/nhl-api/v1/standings/now`)
       .then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`)
         return r.json()
