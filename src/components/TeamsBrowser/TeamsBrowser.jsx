@@ -10,8 +10,10 @@ const DIVISION_NAMES = {
   P: 'Pacific',
 }
 
-export function TeamsBrowser({ onSelectTeam }) {
+export function TeamsBrowser({ onSelectTeam, playoffTeams }) {
   const { teams, loading } = useStandings()
+  const playoffOnly = Array.isArray(playoffTeams) && playoffTeams.length > 0
+  const playoffSet = playoffOnly ? new Set(playoffTeams) : null
 
   if (loading) {
     return (
@@ -24,9 +26,11 @@ export function TeamsBrowser({ onSelectTeam }) {
     )
   }
 
+  const visibleTeams = playoffOnly ? teams.filter((t) => playoffSet.has(t.teamAbbrev)) : teams
+
   // Group teams by division
   const divisions = {}
-  for (const t of teams) {
+  for (const t of visibleTeams) {
     const div = t.division || 'Other'
     if (!divisions[div]) divisions[div] = []
     divisions[div].push(t)
@@ -40,9 +44,13 @@ export function TeamsBrowser({ onSelectTeam }) {
   return (
     <section className="teams-section">
       <h2 className="section-title">
-        <span className="section-title__icon">🏟️</span> Browse by Team
+        <span className="section-title__icon">🏟️</span> {playoffOnly ? 'Playoff Teams' : 'Browse by Team'}
       </h2>
-      <p className="section-subtitle">Click a team to view their roster and stats</p>
+      <p className="section-subtitle">
+        {playoffOnly
+          ? `${visibleTeams.length} teams competing for the Stanley Cup — click to view their roster and stats`
+          : 'Click a team to view their roster and stats'}
+      </p>
 
       {DIVISION_ORDER.map((divKey) => {
         const divTeams = divisions[divKey]

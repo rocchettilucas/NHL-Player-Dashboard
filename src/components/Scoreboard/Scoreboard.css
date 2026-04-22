@@ -44,19 +44,21 @@
 }
 
 .scoreboard-day__label {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-base);
   font-weight: 700;
   color: var(--color-text-primary);
 }
 
 .scoreboard-day__date {
-  font-size: 10px;
-  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  font-weight: 500;
 }
 
 .scoreboard-day__count {
-  font-size: 10px;
+  font-size: var(--font-size-xs);
   color: var(--color-text-muted);
+  font-weight: 500;
 }
 
 /* ── Live indicator ──────────────────────────────────────── */
@@ -143,20 +145,23 @@
 }
 
 .game-card__period {
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-sm);
   font-weight: 700;
   color: var(--color-goals);
+  letter-spacing: 0.5px;
 }
 
 .game-card__final {
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.5px;
 }
 
 .game-card__time {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  font-weight: 600;
 }
 
 .game-card__team {
@@ -180,28 +185,46 @@
 }
 
 .game-card__abbrev {
-  font-size: var(--font-size-sm);
-  font-weight: 600;
-  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-text-primary);
   flex: 1;
+  letter-spacing: 0.5px;
 }
 
 .game-card__score {
   font-family: var(--font-mono);
-  font-size: var(--font-size-lg);
-  font-weight: 700;
-  color: var(--color-text-secondary);
-  min-width: 24px;
+  font-size: var(--font-size-xl);
+  font-weight: 800;
+  color: var(--color-text-primary);
+  min-width: 28px;
   text-align: right;
 }
 
 /* ── Playoff series context ─────────────── */
 .game-card__series {
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  color: var(--color-accent);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
   text-align: center;
-  padding: var(--space-1) var(--space-2);
+  padding: var(--space-2);
+  margin: calc(-1 * var(--space-3)) calc(-1 * var(--space-4)) 0;
   border-bottom: 1px solid var(--color-border);
   background: var(--color-accent-glow);
+}
+
+.game-card__series-round {
+  font-size: var(--font-size-sm);
+  font-weight: 800;
+  color: var(--color-accent);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.game-card__series-standing {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.5px;
 }

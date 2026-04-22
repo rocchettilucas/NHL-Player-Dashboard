@@ -142,16 +142,26 @@ function GameCard({ game }) {
   const awayWins = hasScore && final && game.awayTeam.score > game.homeTeam.score
   const homeWins = hasScore && final && game.homeTeam.score > game.awayTeam.score
 
-  const seriesLabel = game.seriesStatus
-    ? typeof game.seriesStatus === 'string'
-      ? game.seriesStatus
-      : game.seriesStatus.seriesStatusShort ?? null
+  const ss = game.seriesStatus
+  const seriesLabel = (() => {
+    if (!ss) return null
+    if (typeof ss === 'string') return ss
+    const round = ss.seriesAbbrev ?? (ss.round ? `R${ss.round}` : null)
+    const gameNum = ss.gameNumberOfSeries
+    if (round && gameNum) return `${round} · Game ${gameNum}`
+    return ss.seriesStatusShort ?? null
+  })()
+  const seriesStanding = (ss && typeof ss === 'object' && ss.topSeedTeamAbbrev && ss.topSeedWins != null)
+    ? `${ss.topSeedTeamAbbrev} ${ss.topSeedWins} – ${ss.bottomSeedWins ?? 0} ${ss.bottomSeedTeamAbbrev ?? ''}`
     : null
 
   return (
     <div className={`game-card ${live ? 'game-card--live' : ''}`}>
       {seriesLabel && (
-        <div className="game-card__series">{seriesLabel}</div>
+        <div className="game-card__series">
+          <span className="game-card__series-round">{seriesLabel}</span>
+          {seriesStanding && <span className="game-card__series-standing">{seriesStanding}</span>}
+        </div>
       )}
       {/* Status badge */}
       <div className="game-card__status">

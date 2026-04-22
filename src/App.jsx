@@ -50,6 +50,21 @@ export default function App() {
   // Playoff bracket data
   const { bracketData, loading: bracketLoading, error: bracketError, isProjected } = usePlayoffBracket()
 
+  // Derive the 16 playoff team abbrevs from the R1 matchups (every playoff team
+  // plays in R1, so a single pass over round 1 is sufficient).
+  const playoffTeamAbbrevs = (() => {
+    const r1 = bracketData?.rounds?.find((r) => r.roundNumber === 1)
+    if (!r1) return []
+    const abbrevs = []
+    for (const s of r1.series ?? []) {
+      const top = s.topSeedTeam?.abbrev
+      const bottom = s.bottomSeedTeam?.abbrev
+      if (top) abbrevs.push(top)
+      if (bottom) abbrevs.push(bottom)
+    }
+    return abbrevs
+  })()
+
   // Playoff mode is enabled when bracket data exists OR while it's still loading/errored
   // This ensures playoff UI is visible even before the NHL publishes bracket data
   const playoffMode = true
@@ -217,9 +232,12 @@ export default function App() {
             />
           </div>
 
-          {/* Browse by Team */}
+          {/* Browse by Team — limited to playoff teams when viewing playoffs */}
           <div className="home-section">
-            <TeamsBrowser onSelectTeam={handleSelectTeam} />
+            <TeamsBrowser
+              onSelectTeam={handleSelectTeam}
+              playoffTeams={seasonFilter === 'playoffs' ? playoffTeamAbbrevs : null}
+            />
           </div>
         </div>
       )}

@@ -53,7 +53,7 @@ export function LeagueLeaders({ onSelectPlayer, onSelectTeam, gameType = 2 }) {
         {gameType === 3 ? 'Top performers in the 2026 playoffs' : 'Top performers across the NHL this season'}
       </p>
 
-      <div className="leaders-grid">
+      <div className={`leaders-grid ${gameType === 3 ? 'leaders-grid--two-col' : ''}`}>
         {/* Skaters */}
         <div className="leaders-panel card">
           <div className="leaders-panel__header">
@@ -149,7 +149,8 @@ export function LeagueLeaders({ onSelectPlayer, onSelectTeam, gameType = 2 }) {
           )}
         </div>
 
-        {/* Teams */}
+        {/* Teams — hidden during playoffs (standings aren't meaningful mid-playoffs) */}
+        {gameType !== 3 && (
         <div className="leaders-panel card">
           <div className="leaders-panel__header">
             <h3 className="leaders-panel__title">Teams</h3>
@@ -195,6 +196,7 @@ export function LeagueLeaders({ onSelectPlayer, onSelectTeam, gameType = 2 }) {
             </div>
           )}
         </div>
+        )}
       </div>
     </section>
   )
