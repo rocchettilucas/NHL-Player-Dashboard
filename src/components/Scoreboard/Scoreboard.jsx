@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import './Scoreboard.css'
-import { useScores, useSchedule } from '../../hooks/useScores'
+import { useScores, useSchedule, useGamesByDate } from '../../hooks/useScores'
 import { LoadingSpinner } from '../LoadingSpinner/LoadingSpinner'
 
 const STATE_LABELS = {
@@ -36,8 +36,11 @@ export function Scoreboard({ gameType = 2 }) {
   const { games: todayGames, currentDate, loading: scoresLoading } = useScores()
   const { days, loading: scheduleLoading } = useSchedule()
   const [activeDay, setActiveDay] = useState(null)
+  const [customDate, setCustomDate] = useState(null)
+  const { games: customGames, loading: customLoading } = useGamesByDate(customDate)
+  const datePickerRef = useRef(null)
 
-  const loading = scoresLoading || scheduleLoading
+  const loading = scoresLoading || scheduleLoading || customLoading
 
   // Build day tabs from schedule. Counts reflect the active game-type filter
   // so the tab and the main area stay in sync (e.g., "0 games" for regular
@@ -56,11 +59,16 @@ export function Scoreboard({ gameType = 2 }) {
   })
 
   // If no active day selected, default to today (currentDate)
-  const selectedDate = activeDay || currentDate || (dayTabs[0]?.date ?? '')
+  const selectedDate = customDate || activeDay || currentDate || (dayTabs[0]?.date ?? '')
   const selectedTab = dayTabs.find((d) => d.date === selectedDate)
 
-  // For today, use the polled score data; for other days use schedule data
-  const allDisplayGames = selectedDate === currentDate ? todayGames : (selectedTab?.games ?? [])
+  // Source of games for the main panel:
+  //   - customDate picked → use custom-date fetch
+  //   - selectedDate === today → use polled live scores
+  //   - otherwise → use the cached weekly schedule data for that day
+  const allDisplayGames = customDate
+    ? customGames
+    : selectedDate === currentDate ? todayGames : (selectedTab?.games ?? [])
   const displayGames = gameType === 3
     ? allDisplayGames.filter((g) => g.gameType === 3 || g.gameType == null)
     : allDisplayGames.filter((g) => g.gameType === 2 || g.gameType == null)
@@ -85,20 +93,48 @@ export function Scoreboard({ gameType = 2 }) {
         )}
       </p>
 
-      {/* Day selector tabs */}
+      {/* Day selector tabs + date picker */}
       {dayTabs.length > 0 && (
         <div className="scoreboard-days">
           {dayTabs.map((d) => (
             <button
               key={d.date}
-              className={`scoreboard-day ${d.date === selectedDate ? 'scoreboard-day--active' : ''} ${d.date === currentDate ? 'scoreboard-day--today' : ''}`}
-              onClick={() => setActiveDay(d.date)}
+              className={`scoreboard-day ${!customDate && d.date === selectedDate ? 'scoreboard-day--active' : ''} ${d.date === currentDate ? 'scoreboard-day--today' : ''}`}
+              onClick={() => { setCustomDate(null); setActiveDay(d.date) }}
             >
               <span className="scoreboard-day__label">{d.label}</span>
               <span className="scoreboard-day__date">{formatDate(d.date)}</span>
               <span className="scoreboard-day__count">{d.count} {d.count === 1 ? 'game' : 'games'}</span>
             </button>
           ))}
+
+          <button
+            type="button"
+            className={`scoreboard-day scoreboard-day--picker ${customDate ? 'scoreboard-day--active' : ''}`}
+            onClick={() => datePickerRef.current?.showPicker?.() ?? datePickerRef.current?.focus()}
+          >
+            <span className="scoreboard-day__label">📅 Pick a date</span>
+            <span className="scoreboard-day__date">
+              {customDate ? formatDate(customDate) : 'Any day'}
+            </span>
+            {customDate && (
+              <span
+                className="scoreboard-day__clear"
+                onClick={(e) => { e.stopPropagation(); setCustomDate(null) }}
+                role="button"
+                aria-label="Clear selected date"
+              >
+                Clear ✕
+              </span>
+            )}
+            <input
+              ref={datePickerRef}
+              type="date"
+              className="scoreboard-day__date-input"
+              value={customDate ?? ''}
+              onChange={(e) => { setActiveDay(null); setCustomDate(e.target.value || null) }}
+            />
+          </button>
         </div>
       )}
 

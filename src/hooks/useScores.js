@@ -93,6 +93,46 @@ export function useSchedule() {
   return state
 }
 
+/**
+ * Fetch games for a specific calendar date (YYYY-MM-DD). Returns `null`-like
+ * state when `date` is null so it's safe to conditionally render.
+ * @param {string|null} date
+ */
+export function useGamesByDate(date) {
+  const [state, setState] = useState({ games: [], loading: false, error: null })
+
+  useEffect(() => {
+    if (!date) {
+      setState({ games: [], loading: false, error: null })
+      return
+    }
+    let cancelled = false
+    setState((prev) => ({ ...prev, loading: true, error: null }))
+
+    fetch(`/nhl-api/v1/score/${date}`)
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`)
+        return r.json()
+      })
+      .then((data) => {
+        if (cancelled) return
+        const games = (data.games ?? []).map((g) => {
+          try { return mapGame(g) }
+          catch { return null }
+        }).filter(Boolean)
+        setState({ games, loading: false, error: null })
+      })
+      .catch((err) => {
+        if (cancelled) return
+        setState({ games: [], loading: false, error: err.message })
+      })
+
+    return () => { cancelled = true }
+  }, [date])
+
+  return state
+}
+
 function mapTeam(t) {
   if (!t) return { abbrev: '', name: '', logo: '', score: null, record: '' }
   return {
